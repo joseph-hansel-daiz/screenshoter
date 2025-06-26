@@ -16,8 +16,9 @@ r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
 
 CACHE_TTL_SECONDS = 3600  # 1 hour
 
-def url_to_cache_key(url: str) -> str:
-    return f"screenshot:{hashlib.sha256(url.encode()).hexdigest()}"
+def generate_screenshot_cache_key(url: str, width: int, height: int, delay: int) -> str:
+    hash_input = f"{url}|{width}|{height}|{delay}"
+    return f"screenshot:{hashlib.sha256(hash_input.encode()).hexdigest()}"
 
 @app.get("/screenshot")
 async def screenshot(
@@ -29,7 +30,7 @@ async def screenshot(
     if not url.startswith("http"):
         raise HTTPException(status_code=400, detail="URL must start with http:// or https://")
 
-    cache_key = url_to_cache_key(url)
+    cache_key = generate_screenshot_cache_key(url, width, height, delay)
 
     # Check Redis cache
     cached_image = r.get(cache_key)
