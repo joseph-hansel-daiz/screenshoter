@@ -14,7 +14,7 @@ app = FastAPI()
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
 
-CACHE_TTL_SECONDS = 3600  # 1 hour
+CACHE_TTL_SECONDS = 604800  # 1 Week
 
 def generate_screenshot_cache_key(url: str, width: int, height: int, delay: int) -> str:
     hash_input = f"{url}|{width}|{height}|{delay}"
